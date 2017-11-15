@@ -10,9 +10,18 @@ import (
 	"github.com/mholt/archiver"
 )
 
-func main() {
-	const interval = 1 * time.Hour
+const interval = 1 * time.Hour
 
+func main() {
+	sourceDirectory, targetDirectory := setup()
+
+	for {
+		backup(sourceDirectory, targetDirectory)
+		time.Sleep(interval)
+	}
+}
+
+func setup() (string, string) {
 	user, err := user.Current()
 
 	if err != nil {
@@ -25,21 +34,21 @@ func main() {
 	// Create directory in case it doesn't exist
 	os.MkdirAll(targetDirectory, 0777)
 
-	for {
-		timestamp := time.Now().UTC().Format(time.RFC3339)
-		outFileName := "db-" + timestamp + ".tar.xz"
-		outFilePath := path.Join(targetDirectory, outFileName)
+	return sourceDirectory, targetDirectory
+}
 
-		color.Yellow(outFilePath)
+func backup(sourceDirectory, targetDirectory string) {
+	timestamp := time.Now().UTC().Format(time.RFC3339)
+	outFileName := "db-" + timestamp + ".tar.xz"
+	outFilePath := path.Join(targetDirectory, outFileName)
 
-		err := archiver.TarXZ.Make(outFilePath, []string{sourceDirectory})
+	color.Yellow(outFilePath)
 
-		if err != nil {
-			color.Red(err.Error())
-		}
+	err := archiver.TarXZ.Make(outFilePath, []string{sourceDirectory})
 
-		color.Green(outFilePath)
-
-		time.Sleep(interval)
+	if err != nil {
+		color.Red(err.Error())
 	}
+
+	color.Green(outFilePath)
 }
