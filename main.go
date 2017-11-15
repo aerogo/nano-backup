@@ -6,6 +6,7 @@ import (
 	"os/user"
 	"path"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/fatih/color"
@@ -23,6 +24,7 @@ func main() {
 	for {
 		deleteOldFiles(targetDirectory)
 		backup(sourceDirectory, targetDirectory)
+		runtime.GC()
 		time.Sleep(interval)
 	}
 }
