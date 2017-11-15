@@ -1,21 +1,27 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/user"
 	"path"
+	"path/filepath"
 	"time"
 
 	"github.com/fatih/color"
 	"github.com/mholt/archiver"
 )
 
-const interval = 1 * time.Hour
+const (
+	interval        = 2 * time.Hour
+	deleteThreshold = 48 * time.Hour
+)
 
 func main() {
 	sourceDirectory, targetDirectory := setup()
 
 	for {
+		deleteOldFiles(targetDirectory)
 		backup(sourceDirectory, targetDirectory)
 		time.Sleep(interval)
 	}
@@ -42,7 +48,7 @@ func backup(sourceDirectory, targetDirectory string) {
 	outFileName := "db-" + timestamp + ".tar.xz"
 	outFilePath := path.Join(targetDirectory, outFileName)
 
-	color.Yellow(outFilePath)
+	color.Yellow("Creating backup %s", outFilePath)
 
 	err := archiver.TarXZ.Make(outFilePath, []string{sourceDirectory})
 
@@ -50,5 +56,24 @@ func backup(sourceDirectory, targetDirectory string) {
 		color.Red(err.Error())
 	}
 
-	color.Green(outFilePath)
+	color.Green("Finished.")
+}
+
+func deleteOldFiles(targetDirectory string) {
+	filepath.Walk(targetDirectory, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+
+		if time.Since(info.ModTime()) > deleteThreshold {
+			color.Red("Deleting old backup %s", path)
+			err := os.Remove(path)
+
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+
+		return nil
+	})
 }
