@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/fatih/color"
+	"github.com/blitzprog/color"
 	"github.com/mholt/archiver"
 )
 
@@ -52,7 +52,7 @@ func backup(sourceDirectory, targetDirectory string) {
 
 	color.Yellow("Creating backup %s", outFilePath)
 
-	err := archiver.TarXZ.Make(outFilePath, []string{sourceDirectory})
+	err := archiver.Archive([]string{sourceDirectory}, outFilePath)
 
 	if err != nil {
 		color.Red(err.Error())
