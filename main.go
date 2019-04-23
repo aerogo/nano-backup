@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/blitzprog/color"
+	"github.com/akyoto/color"
 	"github.com/mholt/archiver"
 )
 
