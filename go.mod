@@ -3,7 +3,7 @@ module github.com/aerogo/nano-backup
 go 1.12
 
 require (
-	github.com/akyoto/color v1.8.0
+	github.com/akyoto/color v1.8.1
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/mholt/archiver v3.1.1+incompatible
